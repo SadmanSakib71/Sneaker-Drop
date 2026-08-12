@@ -16,6 +16,23 @@ function emitStockUpdated(dropId, availableStock) {
   });
 }
 
+/**
+ * Broadcast the latest 3 purchasers for a drop to its room.
+ * Call ONLY after a successful purchase COMMIT.
+ */
+function emitPurchaseFeedUpdated(dropId, purchasers) {
+  const io = getIO();
+  if (!io) {
+    return;
+  }
+
+  io.to(`drop:${dropId}`).emit('purchase_feed_updated', {
+    dropId,
+    purchasers,
+  });
+}
+
 module.exports = {
   emitStockUpdated,
+  emitPurchaseFeedUpdated,
 };

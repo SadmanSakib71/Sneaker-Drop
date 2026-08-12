@@ -1,6 +1,10 @@
 const { UniqueConstraintError } = require('sequelize');
 const { sequelize, User, Drop, Reservation, Purchase } = require('../models');
-const { emitStockUpdated } = require('../sockets/socketEmitter');
+const {
+  emitStockUpdated,
+  emitPurchaseFeedUpdated,
+} = require('../sockets/socketEmitter');
+const { getLatestPurchasers } = require('./purchaseFeedService');
 
 /**
  * Complete a purchase for a user's active, non-expired reservation.
@@ -135,8 +139,11 @@ async function purchaseDrop({ dropId, userId }) {
       };
     });
 
-    // COMMIT succeeded — broadcast actual (unchanged) stock for consistency.
+    // COMMIT succeeded — broadcast stock + activity feed from committed data.
     emitStockUpdated(result.dropId, result.availableStock);
+
+    const purchasers = await getLatestPurchasers(result.dropId);
+    emitPurchaseFeedUpdated(result.dropId, purchasers);
 
     return result;
   } catch (err) {

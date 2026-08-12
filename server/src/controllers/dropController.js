@@ -1,9 +1,13 @@
 const { Drop } = require('../models');
+const {
+  getLatestPurchasers,
+  getLatestPurchasersByDropIds,
+} = require('../services/purchaseFeedService');
 
 /**
  * Shape a Drop for API responses (keeps the client contract clear).
  */
-function formatDrop(drop) {
+function formatDrop(drop, latestPurchasers = []) {
   return {
     id: drop.id,
     name: drop.name,
@@ -12,6 +16,7 @@ function formatDrop(drop) {
     totalStock: drop.totalStock,
     availableStock: drop.availableStock,
     startsAt: drop.startsAt,
+    latestPurchasers,
   };
 }
 
@@ -76,7 +81,7 @@ async function createDrop(req, res, next) {
 
     return res.status(201).json({
       status: 'success',
-      data: formatDrop(drop),
+      data: formatDrop(drop, []),
     });
   } catch (err) {
     return next(err);
@@ -86,6 +91,7 @@ async function createDrop(req, res, next) {
 /**
  * GET /api/drops
  * Lists all drops, soonest start first.
+ * Each drop includes its own top 3 latest purchasers.
  */
 async function getAllDrops(req, res, next) {
   try {
@@ -93,9 +99,15 @@ async function getAllDrops(req, res, next) {
       order: [['startsAt', 'ASC']],
     });
 
+    const purchasersByDropId = await getLatestPurchasersByDropIds(
+      drops.map((drop) => drop.id)
+    );
+
     return res.status(200).json({
       status: 'success',
-      data: drops.map(formatDrop),
+      data: drops.map((drop) =>
+        formatDrop(drop, purchasersByDropId[drop.id] || [])
+      ),
     });
   } catch (err) {
     return next(err);
@@ -104,6 +116,7 @@ async function getAllDrops(req, res, next) {
 
 /**
  * GET /api/drops/:id
+ * Includes the top 3 latest purchasers for this drop.
  */
 async function getDropById(req, res, next) {
   try {
@@ -123,9 +136,11 @@ async function getDropById(req, res, next) {
       });
     }
 
+    const latestPurchasers = await getLatestPurchasers(drop.id);
+
     return res.status(200).json({
       status: 'success',
-      data: formatDrop(drop),
+      data: formatDrop(drop, latestPurchasers),
     });
   } catch (err) {
     return next(err);

@@ -1,4 +1,5 @@
 const { sequelize, User, Drop, Reservation } = require('../models');
+const { emitStockUpdated } = require('../sockets/socketEmitter');
 
 /**
  * Atomically reserve stock for a drop.
@@ -6,9 +7,11 @@ const { sequelize, User, Drop, Reservation } = require('../models');
  * Concurrency safety comes from SELECT … FOR UPDATE on the drop row:
  * only one transaction can hold the lock at a time, so stock checks and
  * decrements cannot race.
+ *
+ * Socket.io is notified only AFTER the transaction commits successfully.
  */
 async function reserveDrop({ dropId, userId, quantity }) {
-  return sequelize.transaction(async (transaction) => {
+  const result = await sequelize.transaction(async (transaction) => {
     const user = await User.findByPk(userId, { transaction });
     if (!user) {
       const err = new Error('User not found');
@@ -77,6 +80,11 @@ async function reserveDrop({ dropId, userId, quantity }) {
       availableStock: drop.availableStock,
     };
   });
+
+  // COMMIT succeeded — broadcast committed stock to drop room clients.
+  emitStockUpdated(result.dropId, result.availableStock);
+
+  return result;
 }
 
 module.exports = {

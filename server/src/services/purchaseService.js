@@ -1,5 +1,6 @@
 const { UniqueConstraintError } = require('sequelize');
 const { sequelize, User, Drop, Reservation, Purchase } = require('../models');
+const { emitStockUpdated } = require('../sockets/socketEmitter');
 
 /**
  * Complete a purchase for a user's active, non-expired reservation.
@@ -12,10 +13,13 @@ const { sequelize, User, Drop, Reservation, Purchase } = require('../models');
  *
  * availableStock is intentionally NOT changed — stock was already decremented
  * at reservation time.
+ *
+ * After COMMIT we may emit stock_updated with the actual DB value for
+ * client consistency (stock does not change during purchase).
  */
 async function purchaseDrop({ dropId, userId }) {
   try {
-    return await sequelize.transaction(async (transaction) => {
+    const result = await sequelize.transaction(async (transaction) => {
       const user = await User.findByPk(userId, { transaction });
       if (!user) {
         const err = new Error('User not found');
@@ -130,6 +134,11 @@ async function purchaseDrop({ dropId, userId }) {
         availableStock: drop.availableStock,
       };
     });
+
+    // COMMIT succeeded — broadcast actual (unchanged) stock for consistency.
+    emitStockUpdated(result.dropId, result.availableStock);
+
+    return result;
   } catch (err) {
     if (err instanceof UniqueConstraintError) {
       const conflict = new Error('Reservation has already been purchased');

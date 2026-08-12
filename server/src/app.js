@@ -1,4 +1,5 @@
 const express = require('express');
+const dropRoutes = require('./routes/dropRoutes');
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use('/api/drops', dropRoutes);
 
 // 404 for unknown routes
 app.use((req, res) => {

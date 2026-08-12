@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment (secrets — never commit)
+.env
+server/.env
+client/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build / coverage
+dist/
+build/
+coverage/

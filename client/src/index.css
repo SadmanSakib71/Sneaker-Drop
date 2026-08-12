@@ -1,0 +1,244 @@
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f0f2f5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+}
+
+.user-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid #dde1e6;
+  border-radius: 8px;
+}
+
+.user-bar label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.user-bar input {
+  width: 4.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #c5cad3;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.user-bar-hint {
+  font-size: 0.8rem;
+  color: #667085;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 0;
+  color: #667085;
+}
+
+.status-message {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #dde1e6;
+  border-radius: 8px;
+}
+
+.error-block p {
+  margin: 0 0 0.75rem;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.drop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.drop-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem 1.15rem 1.25rem;
+  background: #fff;
+  border: 1px solid #dde1e6;
+  border-radius: 10px;
+}
+
+.drop-card-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.drop-desc {
+  margin: 0.35rem 0 0;
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+.drop-price {
+  margin: 0;
+  font-weight: 600;
+}
+
+.stock-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.4rem 0.7rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #065f46;
+  background: #d1fae5;
+  border-radius: 6px;
+}
+
+.stock-badge.sold-out {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.reservation-timer {
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.drop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-reserve {
+  color: #fff;
+  background: #2563eb;
+}
+
+.btn-purchase {
+  color: #fff;
+  background: #059669;
+}
+
+.btn-sold-out {
+  color: #991b1b;
+  background: #fecaca;
+}
+
+.btn-retry {
+  color: #fff;
+  background: #2563eb;
+}
+
+.latest-purchasers h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.latest-purchasers ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.latest-purchasers li {
+  margin-bottom: 0.15rem;
+}
+
+.muted {
+  margin: 0;
+  color: #98a2b3;
+  font-size: 0.9rem;
+}
+
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  max-width: min(360px, calc(100vw - 2rem));
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.toast-success {
+  background: #059669;
+}
+
+.toast-error {
+  background: #dc2626;
+}
+
+.toast-info {
+  background: #2563eb;
+}
+
+@media (max-width: 480px) {
+  .drop-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}

@@ -31,7 +31,13 @@ function roomName(dropId) {
  * Call once at startup from server.js.
  */
 function initSocket(httpServer) {
-  io = new Server(httpServer);
+  const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
+
+  io = new Server(httpServer, {
+    cors: {
+      origin: CORS_ORIGIN,
+    },
+  });
 
   io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);

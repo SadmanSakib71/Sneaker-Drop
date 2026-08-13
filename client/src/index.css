@@ -44,12 +44,52 @@ body {
   font-weight: 600;
 }
 
-.user-bar input {
-  width: 4.5rem;
-  padding: 0.35rem 0.5rem;
+.user-id-stepper {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.user-id-step {
+  min-width: 2.5rem;
+  padding: 0.35rem 0.55rem;
   border: 1px solid #c5cad3;
-  border-radius: 6px;
+  background: #f8f9fb;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.user-id-step:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.user-id-step:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.user-id-step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.user-bar input {
+  width: 3.25rem;
+  padding: 0.35rem 0.35rem;
+  border: 1px solid #c5cad3;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
   font-size: 0.95rem;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.user-bar input::-webkit-outer-spin-button,
+.user-bar input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .user-bar-name {
@@ -234,6 +274,11 @@ body {
 }
 
 @media (max-width: 480px) {
+  .user-id-step {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
   .drop-actions {
     flex-direction: column;
   }

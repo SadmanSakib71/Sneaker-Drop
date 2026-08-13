@@ -11,10 +11,6 @@ import PurchaseButton from './PurchaseButton';
 import ReservationTimer from './ReservationTimer';
 import LatestPurchasers from './LatestPurchasers';
 
-/**
- * One drop card: stock, reserve/purchase actions, timer, latest purchasers.
- * Reservation state lives here — stock/purchasers come from parent (REST + sockets).
- */
 function DropCard({ drop, userId, socket, onNotify }) {
   const [reservation, setReservation] = useState(null);
   const [reserving, setReserving] = useState(false);
@@ -28,7 +24,6 @@ function DropCard({ drop, userId, socket, onNotify }) {
   const hasActiveReservation = Boolean(reservation) && !expired;
   const soldOut = drop.availableStock <= 0;
 
-  // Join / leave this drop's Socket.io room while mounted.
   useEffect(() => {
     if (!socket || drop?.id == null) {
       return undefined;
@@ -74,8 +69,7 @@ function DropCard({ drop, userId, socket, onNotify }) {
       });
 
       onNotify?.('Reservation successful.', 'success');
-      // Stock is updated via stock_updated.
-      // Do NOT set availableStock - 1 here.
+      // Stock is updated via stock_updated — do not decrement locally.
     } catch (error) {
       onNotify?.(friendlyErrorMessage(error, 'reserve'), 'error');
     } finally {

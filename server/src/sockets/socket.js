@@ -26,10 +26,6 @@ function roomName(dropId) {
   return `drop:${dropId}`;
 }
 
-/**
- * Attach Socket.io to the existing HTTP server.
- * Call once at startup from server.js.
- */
 function initSocket(httpServer) {
   const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
@@ -40,8 +36,6 @@ function initSocket(httpServer) {
   });
 
   io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.id}`);
-
     socket.on('join_drop', (payload) => {
       const dropId = parseDropId(payload);
       if (dropId == null) {
@@ -56,10 +50,6 @@ function initSocket(httpServer) {
         return;
       }
       socket.leave(roomName(dropId));
-    });
-
-    socket.on('disconnect', () => {
-      console.log(`Socket disconnected: ${socket.id}`);
     });
   });
 

@@ -1,10 +1,5 @@
 const { purchaseDrop } = require('../services/purchaseService');
 
-/**
- * POST /api/drops/:id/purchase
- * Header: X-User-Id (required)
- * Body: none required
- */
 async function purchase(req, res, next) {
   try {
     const userIdHeader = req.get('X-User-Id');

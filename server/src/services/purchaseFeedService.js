@@ -1,9 +1,6 @@
 const { Purchase, User } = require('../models');
 
-/**
- * Shape a purchase + user into the activity-feed purchaser payload.
- * Maps User.name → username for the API contract.
- */
+/** Maps User.name → username for the activity-feed contract. */
 function formatPurchaser(purchase) {
   return {
     userId: purchase.userId,
@@ -12,10 +9,7 @@ function formatPurchaser(purchase) {
   };
 }
 
-/**
- * Latest 3 successful purchasers for a single drop (newest first).
- * Scoped by dropId — never mixes purchasers across drops.
- */
+/** Latest 3 purchasers for one drop, newest first. Never mixes drops. */
 async function getLatestPurchasers(dropId) {
   const purchases = await Purchase.findAll({
     where: { dropId },
@@ -32,10 +26,7 @@ async function getLatestPurchasers(dropId) {
   return purchases.map(formatPurchaser);
 }
 
-/**
- * Latest 3 purchasers for each drop in the list.
- * Uses one scoped query per drop — simple and correct for a small drop catalog.
- */
+/** Latest 3 purchasers for each drop (one scoped query per drop). */
 async function getLatestPurchasersByDropIds(dropIds) {
   const map = {};
 
@@ -49,7 +40,6 @@ async function getLatestPurchasersByDropIds(dropIds) {
 }
 
 module.exports = {
-  formatPurchaser,
   getLatestPurchasers,
   getLatestPurchasersByDropIds,
 };

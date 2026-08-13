@@ -1,8 +1,5 @@
 import { useEffect } from 'react';
 
-/**
- * Simple auto-dismissing toast notification.
- */
 function Toast({ toast, onClose }) {
   useEffect(() => {
     if (!toast) {

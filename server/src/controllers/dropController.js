@@ -4,9 +4,6 @@ const {
   getLatestPurchasersByDropIds,
 } = require('../services/purchaseFeedService');
 
-/**
- * Shape a Drop for API responses (keeps the client contract clear).
- */
 function formatDrop(drop, latestPurchasers = []) {
   return {
     id: drop.id,
@@ -20,10 +17,7 @@ function formatDrop(drop, latestPurchasers = []) {
   };
 }
 
-/**
- * Simple create-body validation. Returns an error message string, or null if valid.
- * availableStock is intentionally ignored — the server sets it from totalStock.
- */
+/** availableStock is ignored here — the server always sets it from totalStock. */
 function validateCreateBody(body) {
   if (body.name === undefined || body.name === null || String(body.name).trim() === '') {
     return 'name is required';
@@ -56,10 +50,6 @@ function validateCreateBody(body) {
   return null;
 }
 
-/**
- * POST /api/drops
- * Creates a drop. availableStock is always set to totalStock by the server.
- */
 async function createDrop(req, res, next) {
   try {
     const error = validateCreateBody(req.body || {});
@@ -88,11 +78,6 @@ async function createDrop(req, res, next) {
   }
 }
 
-/**
- * GET /api/drops
- * Lists all drops, soonest start first.
- * Each drop includes its own top 3 latest purchasers.
- */
 async function getAllDrops(req, res, next) {
   try {
     const drops = await Drop.findAll({
@@ -114,10 +99,6 @@ async function getAllDrops(req, res, next) {
   }
 }
 
-/**
- * GET /api/drops/:id
- * Includes the top 3 latest purchasers for this drop.
- */
 async function getDropById(req, res, next) {
   try {
     const id = Number(req.params.id);

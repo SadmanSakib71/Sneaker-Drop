@@ -1,10 +1,5 @@
 const { reserveDrop } = require('../services/reservationService');
 
-/**
- * POST /api/drops/:id/reserve
- * Header: X-User-Id (required)
- * Body (optional): { quantity } — defaults to 1
- */
 async function reserve(req, res, next) {
   try {
     const userIdHeader = req.get('X-User-Id');
@@ -31,7 +26,6 @@ async function reserve(req, res, next) {
       });
     }
 
-    // Default quantity to 1 when omitted.
     let quantity = 1;
     if (req.body && req.body.quantity !== undefined && req.body.quantity !== null && req.body.quantity !== '') {
       quantity = Number(req.body.quantity);

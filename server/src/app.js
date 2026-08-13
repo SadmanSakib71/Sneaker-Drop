@@ -18,10 +18,6 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-/**
- * Health check — confirms the API process is running.
- * DB connectivity is verified at startup in server.js.
- */
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -32,7 +28,6 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/drops', dropRoutes);
 
-// 404 for unknown routes
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -40,7 +35,6 @@ app.use((req, res) => {
   });
 });
 
-// Central error handler
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({

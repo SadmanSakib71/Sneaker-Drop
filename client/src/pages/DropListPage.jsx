@@ -4,9 +4,6 @@ import { useSocket } from '../hooks/useSocket';
 import DropCard from '../components/DropCard';
 import Toast from '../components/Toast';
 
-/**
- * Main dashboard: load drops via REST, then apply Socket.io updates in place.
- */
 function DropListPage({ userId }) {
   const socket = useSocket();
   const [drops, setDrops] = useState([]);

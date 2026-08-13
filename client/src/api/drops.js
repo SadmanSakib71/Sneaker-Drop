@@ -1,9 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-/**
- * Demo user identity — no full auth in this phase.
- * Every reserve/purchase call must send X-User-Id.
- */
+/** Demo identity sent as X-User-Id (no full auth in this assessment). */
 export const DEMO_USER_ID = 1;
 
 export function getApiUrl() {
@@ -50,17 +47,10 @@ async function request(path, { method = 'GET', userId, body } = {}) {
   return json;
 }
 
-/** GET /api/drops */
 export function getDrops() {
   return request('/api/drops');
 }
 
-/** GET /api/drops/:id */
-export function getDrop(dropId) {
-  return request(`/api/drops/${dropId}`);
-}
-
-/** POST /api/drops/:id/reserve */
 export function reserveDrop(dropId, userId = DEMO_USER_ID, quantity = 1) {
   return request(`/api/drops/${dropId}/reserve`, {
     method: 'POST',
@@ -69,7 +59,6 @@ export function reserveDrop(dropId, userId = DEMO_USER_ID, quantity = 1) {
   });
 }
 
-/** POST /api/drops/:id/purchase */
 export function purchaseDrop(dropId, userId = DEMO_USER_ID) {
   return request(`/api/drops/${dropId}/purchase`, {
     method: 'POST',

@@ -62,8 +62,22 @@ function isPlaceholderDrop(drop) {
   return drop.name === "Air Jordan 1";
 }
 
+const LAST_UNIT_DROP_NAME = "Air Jordan 1 Low OG";
+
+function lastUnitDrop() {
+  return {
+    name: LAST_UNIT_DROP_NAME,
+    description:
+      "Last remaining pair of this limited drop — reserve to see sold-out behavior.",
+    price: 190,
+    totalStock: 1,
+    startsAt: hoursFromNow(-0.1),
+  };
+}
+
 function featuredDrops() {
   return [
+    lastUnitDrop(),
     {
       name: "Air Jordan 1 Retro High",
       description:
@@ -350,7 +364,9 @@ function restoredSneakers() {
 }
 
 function shoeNamePool() {
-  return [...featuredDrops(), ...restoredSneakers()];
+  return [...featuredDrops(), ...restoredSneakers()].filter(
+    (item) => item.name !== LAST_UNIT_DROP_NAME,
+  );
 }
 
 async function renameTestDrops() {
@@ -524,6 +540,31 @@ async function ensurePurchase(dropId, userId) {
   return true;
 }
 
+async function resetLastUnitDrop() {
+  const spec = lastUnitDrop();
+  const drop = await Drop.findOne({ where: { name: spec.name } });
+  if (!drop) {
+    throw new Error(`Missing last-unit drop: ${spec.name}`);
+  }
+
+  await sequelize.transaction(async (transaction) => {
+    await Purchase.destroy({ where: { dropId: drop.id }, transaction });
+    await Reservation.destroy({ where: { dropId: drop.id }, transaction });
+
+    drop.totalStock = 1;
+    drop.availableStock = 1;
+    drop.startsAt = spec.startsAt;
+    drop.description = spec.description;
+    drop.price = spec.price;
+    await drop.save({ transaction });
+  });
+
+  console.log(
+    `Last-unit drop ${drop.id}: ${drop.name} reset to availableStock=1 (no holds).`,
+  );
+  return drop;
+}
+
 async function addPurchaseActivity(dropsByName) {
   const plan = [
     { name: "Air Jordan 1 Retro High", userIds: [1, 2] },
@@ -606,6 +647,9 @@ async function main() {
   console.log("");
 
   const dropsByName = new Map(featured.map(({ drop }) => [drop.name, drop]));
+  await resetLastUnitDrop();
+  console.log("");
+
   const addedPurchases = await addPurchaseActivity(dropsByName);
   console.log(`Purchase records added this run: ${addedPurchases}\n`);
 

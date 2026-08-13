@@ -52,6 +52,12 @@ body {
   font-size: 0.95rem;
 }
 
+.user-bar-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
 .user-bar-hint {
   font-size: 0.8rem;
   color: #667085;

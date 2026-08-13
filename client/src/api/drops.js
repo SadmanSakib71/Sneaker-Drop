@@ -3,6 +3,19 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 /** Demo identity sent as X-User-Id (no full auth in this assessment). */
 export const DEMO_USER_ID = 1;
 
+export const DEMO_USERS = [
+  { id: 1, name: 'Alex Carter' },
+  { id: 2, name: 'Ryan Wilson' },
+  { id: 3, name: 'Daniel Brooks' },
+  { id: 4, name: 'Ethan Miller' },
+  { id: 5, name: 'Noah Anderson' },
+];
+
+export function getDemoUserName(userId) {
+  const user = DEMO_USERS.find((entry) => entry.id === Number(userId));
+  return user ? user.name : null;
+}
+
 export function getApiUrl() {
   return API_URL;
 }

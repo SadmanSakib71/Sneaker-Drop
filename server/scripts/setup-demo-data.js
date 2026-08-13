@@ -105,7 +105,7 @@ function featuredDrops() {
       name: "Nike Air Max 1",
       description: "Heritage running silhouette with a modern limited release.",
       price: 160,
-      totalStock: 60,
+      totalStock: 4,
       startsAt: hoursFromNow(4),
     },
     {
@@ -113,7 +113,7 @@ function featuredDrops() {
       description:
         "Classic court-inspired sneaker with a limited seasonal release.",
       price: 130,
-      totalStock: 45,
+      totalStock: 3,
       startsAt: hoursFromNow(24),
     },
     {
@@ -121,7 +121,7 @@ function featuredDrops() {
       description:
         "Timeless low-top silhouette released in limited quantities.",
       price: 150,
-      totalStock: 35,
+      totalStock: 2,
       startsAt: hoursFromNow(72),
     },
   ];
@@ -134,46 +134,46 @@ function restoredSneakers() {
       name: "Adidas Samba OG",
       description: "Low-profile indoor-inspired sneaker with a gum sole.",
       price: 100,
-      totalStock: 55,
+      totalStock: 4,
     },
     {
       name: "Converse Chuck 70",
       description:
         "Vintage high-top canvas sneaker with a limited seasonal run.",
       price: 90,
-      totalStock: 40,
+      totalStock: 3,
     },
     {
       name: "Vans Old Skool",
       description: "Classic skate sneaker with the signature side stripe.",
       price: 80,
-      totalStock: 50,
+      totalStock: 2,
     },
     {
       name: "Puma Suede Classic",
       description: "Heritage suede sneaker from the original Puma lineup.",
       price: 85,
-      totalStock: 42,
+      totalStock: 4,
     },
     {
       name: "Reebok Club C 85",
       description: "Clean court classic with a limited restock.",
       price: 90,
-      totalStock: 38,
+      totalStock: 3,
     },
     {
       name: "Asics Gel-Kayano 14",
       description:
         "Early-2000s running silhouette reissued in limited numbers.",
       price: 160,
-      totalStock: 30,
+      totalStock: 2,
     },
     {
       name: "Salomon XT-6",
       description:
         "Trail runner with a technical build and limited availability.",
       price: 200,
-      totalStock: 25,
+      totalStock: 4,
     },
     {
       name: "Hoka Clifton 9",
@@ -215,7 +215,7 @@ function restoredSneakers() {
       name: "Air Jordan 11 Retro",
       description: "Patent-leather championship silhouette, limited restock.",
       price: 220,
-      totalStock: 22,
+      totalStock: 3,
     },
     {
       name: "Nike Cortez",
@@ -251,7 +251,7 @@ function restoredSneakers() {
       name: "Nike SB Dunk Low",
       description: "Skate-ready Dunk with a limited shop allocation.",
       price: 125,
-      totalStock: 30,
+      totalStock: 2,
     },
     {
       name: "Air Jordan 6 Retro",
@@ -480,6 +480,32 @@ async function removeLeftoverTestUsers() {
   return extras;
 }
 
+async function heldQuantity(dropId) {
+  return (
+    (await Reservation.sum("quantity", {
+      where: {
+        dropId,
+        status: { [Op.in]: ["active", "completed"] },
+      },
+    })) || 0
+  );
+}
+
+async function applyCatalogStock(drop, spec) {
+  const held = await heldQuantity(drop.id);
+  const targetTotal = spec.totalStock;
+
+  if (held > targetTotal) {
+    drop.totalStock = held;
+    drop.availableStock = 0;
+    return `stock clamped to held ${held} (catalog wanted ${targetTotal})`;
+  }
+
+  drop.totalStock = targetTotal;
+  drop.availableStock = targetTotal - held;
+  return `stock ${drop.availableStock}/${drop.totalStock}`;
+}
+
 async function ensureDropsFromCatalog(catalog, label) {
   const result = [];
 
@@ -504,8 +530,9 @@ async function ensureDropsFromCatalog(catalog, label) {
     drop.description = spec.description;
     drop.price = spec.price;
     drop.startsAt = spec.startsAt;
+    const stockNote = await applyCatalogStock(drop, spec);
     await drop.save();
-    console.log(`Updated ${label} ${drop.id}: ${drop.name}`);
+    console.log(`Updated ${label} ${drop.id}: ${drop.name} (${stockNote})`);
     result.push({ drop, created: false });
   }
 

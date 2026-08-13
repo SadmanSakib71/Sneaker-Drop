@@ -1,6 +1,5 @@
 const { Purchase, User } = require('../models');
 
-/** Maps User.name → username for the activity-feed contract. */
 function formatPurchaser(purchase) {
   return {
     userId: purchase.userId,
@@ -9,7 +8,6 @@ function formatPurchaser(purchase) {
   };
 }
 
-/** Latest 3 purchasers for one drop, newest first. Never mixes drops. */
 async function getLatestPurchasers(dropId) {
   const purchases = await Purchase.findAll({
     where: { dropId },
@@ -26,7 +24,6 @@ async function getLatestPurchasers(dropId) {
   return purchases.map(formatPurchaser);
 }
 
-/** Latest 3 purchasers for each drop (one scoped query per drop). */
 async function getLatestPurchasersByDropIds(dropIds) {
   const map = {};
 

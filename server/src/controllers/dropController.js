@@ -17,7 +17,6 @@ function formatDrop(drop, latestPurchasers = []) {
   };
 }
 
-/** availableStock is ignored here — the server always sets it from totalStock. */
 function validateCreateBody(body) {
   if (body.name === undefined || body.name === null || String(body.name).trim() === '') {
     return 'name is required';
@@ -65,7 +64,7 @@ async function createDrop(req, res, next) {
       description: description != null ? String(description) : null,
       price: Number(price),
       totalStock: stock,
-      availableStock: stock, // never trust the client for inventory
+      availableStock: stock,
       startsAt: new Date(startsAt),
     });
 

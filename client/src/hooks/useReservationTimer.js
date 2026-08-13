@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
 
-/**
- * Countdown UI from server-provided expiresAt.
- * This is only a convenience — the backend still validates reservations.
- *
- * secondsLeft is derived from expiresAt + clock tick (not stale useState),
- * so a newly set reservation never looks expired for one render.
- */
 export function useReservationTimer(expiresAt) {
   const [now, setNow] = useState(() => Date.now());
 

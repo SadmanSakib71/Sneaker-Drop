@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { DEMO_USER_ID, getDemoUserName } from './api/drops';
-import DropListPage from './pages/DropListPage';
+import { useState } from "react";
+import { DEMO_USER_ID, getDemoUserName } from "./api/drops";
+import DropListPage from "./pages/DropListPage";
 
 function App() {
   const [userId, setUserId] = useState(DEMO_USER_ID);
@@ -49,8 +49,9 @@ function App() {
         </label>
         {userName ? (
           <span className="user-bar-name">{userName}</span>
-        ) : null}
-        <span className="user-bar-hint">Sent as X-User-Id (no auth in this phase)</span>
+        ) : (
+          <span className="user-bar-hint">No User Found</span>
+        )}
       </div>
       <DropListPage userId={userId} />
     </div>

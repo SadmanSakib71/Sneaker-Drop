@@ -1,10 +1,5 @@
 const { Sequelize } = require('sequelize');
 
-/**
- * Sequelize instance for Neon PostgreSQL.
- * Connection string comes only from DATABASE_URL (server/.env).
- * Neon requires SSL; dialectOptions enable that safely for managed Postgres.
- */
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {

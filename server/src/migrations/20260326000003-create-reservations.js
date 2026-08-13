@@ -64,7 +64,6 @@ module.exports = {
       },
     });
 
-    // Useful lookup indexes for reservation flows
     await queryInterface.addIndex('reservations', ['dropId'], {
       name: 'reservations_drop_id_idx',
     });
@@ -78,7 +77,6 @@ module.exports = {
       name: 'reservations_expires_at_idx',
     });
 
-    // One active reservation per user per drop (partial unique index)
     await queryInterface.addIndex('reservations', ['userId', 'dropId'], {
       unique: true,
       name: 'reservations_user_drop_active_unique',
@@ -90,7 +88,6 @@ module.exports = {
 
   async down(queryInterface) {
     await queryInterface.dropTable('reservations');
-    // ENUM type is left behind in Postgres unless removed explicitly
     await queryInterface.sequelize.query(
       'DROP TYPE IF EXISTS "enum_reservations_status";'
     );

@@ -33,7 +33,6 @@ function DropListPage({ userId }) {
     loadDrops();
   }, [loadDrops]);
 
-  // Real-time updates — server is the source of truth for stock and feed.
   useEffect(() => {
     if (!socket) {
       return undefined;

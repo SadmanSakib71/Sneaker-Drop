@@ -37,7 +37,6 @@ function DropCard({ drop, userId, socket, onNotify }) {
     };
   }, [socket, drop.id]);
 
-  // Local timer reached 0 — clear reservation UI (backend remains authoritative).
   useEffect(() => {
     if (!reservation || !expired) {
       return;
@@ -62,14 +61,12 @@ function DropCard({ drop, userId, socket, onNotify }) {
       const result = await reserveDrop(drop.id, userId, 1);
       const data = result.data;
 
-      // Use server expiresAt — never Date.now() + 60000 on the client.
       setReservation({
         reservationId: data.reservationId,
         expiresAt: data.expiresAt,
       });
 
       onNotify?.('Reservation successful.', 'success');
-      // Stock is updated via stock_updated — do not decrement locally.
     } catch (error) {
       onNotify?.(friendlyErrorMessage(error, 'reserve'), 'error');
     } finally {
@@ -90,7 +87,6 @@ function DropCard({ drop, userId, socket, onNotify }) {
     } catch (error) {
       onNotify?.(friendlyErrorMessage(error, 'purchase'), 'error');
 
-      // If backend says expired / no reservation, clear local reservation UI.
       if (error.status === 410 || error.status === 400) {
         setReservation(null);
       }

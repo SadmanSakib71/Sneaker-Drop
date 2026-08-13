@@ -14,15 +14,13 @@ async function start() {
     await sequelize.authenticate();
     console.log('Database connection established (Neon PostgreSQL via Sequelize).');
 
-    // Start after DB is ready — never before authenticate() succeeds.
     startReservationExpiryJob();
 
     const httpServer = http.createServer(app);
     initSocket(httpServer);
 
     httpServer.listen(PORT, () => {
-      console.log(`SneakerDrop API listening on http://localhost:${PORT}`);
-      console.log(`Health check: GET http://localhost:${PORT}/api/health`);
+      console.log(`SneakerDrop API listening on port ${PORT}`);
       console.log('Socket.io ready');
     });
   } catch (error) {

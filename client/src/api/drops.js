@@ -1,6 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-/** Demo identity sent as X-User-Id (no full auth in this assessment). */
 export const DEMO_USER_ID = 1;
 
 export const DEMO_USERS = [
@@ -79,10 +78,6 @@ export function purchaseDrop(dropId, userId = DEMO_USER_ID) {
   });
 }
 
-/**
- * Map API errors to short, user-facing messages.
- * Never show stack traces.
- */
 export function friendlyErrorMessage(error, context = 'request') {
   const status = error?.status;
   const message = error?.message || '';

@@ -2,6 +2,12 @@
 
 SneakerDrop is a real-time inventory system for a limited-edition sneaker drop. Users reserve stock for 60 seconds, then complete a purchase. PostgreSQL is the source of truth for inventory; Socket.io broadcasts committed stock and purchase-feed updates to connected clients.
 
+## Live Demo
+
+- **Frontend:** [https://sneaker-drop-six.vercel.app/](https://sneaker-drop-six.vercel.app/)
+- **API:** [https://api-sneaker-drop.onrender.com](https://api-sneaker-drop.onrender.com)
+- **Health:** [https://api-sneaker-drop.onrender.com/api/health](https://api-sneaker-drop.onrender.com/api/health)
+
 ## Features
 
 - Drop listing and drop creation via REST
@@ -323,7 +329,7 @@ NODE_ENV=development
 | Variable       | Used for                                                                                               |
 | -------------- | ------------------------------------------------------------------------------------------------------ |
 | `DATABASE_URL` | Neon PostgreSQL connection (required)                                                                  |
-| `PORT`         | HTTP + Socket.io port (default `5000`)                                                                 |
+| `PORT`         | HTTP + Socket.io port for local use (default `5000`). Hosts like Render set this automatically. |
 | `CORS_ORIGIN`  | Allowed REST and Socket.io origin (default `http://localhost:5173`)                                    |
 | `NODE_ENV`     | Sequelize CLI environment (`development` / `test` / `production` share the same `DATABASE_URL` config) |
 
@@ -375,7 +381,11 @@ npm run db:migrate:undo
 npm run db:migrate:undo:all
 ```
 
-Insert at least one `users` row before reserving or purchasing (the UI default is Demo User ID `1`). There is no seeder script in this repository.
+Insert at least one `users` row before reserving or purchasing (the UI default is Demo User ID `1`). Demo users and drops can be created with:
+
+```bash
+node scripts/setup-demo-data.js
+```
 
 ## Running Locally
 
@@ -400,7 +410,7 @@ Start the UI (from `client/`):
 npm run dev
 ```
 
-- Frontend: [http://localhost:5173](http://localhost:5173) (Vite default; `vite.config.js` does not override the port)
+- Frontend: [http://localhost:5173](http://localhost:5173)
 
 `client/package.json` also includes `npm run build`, `npm run preview`, and `npm run lint`.
 
@@ -449,17 +459,24 @@ Expected result for stock = 1 and 20 concurrent reserve requests:
 
 ## Deployment
 
-This project is not deployed yet.
+The app is deployed as three pieces:
 
-It can be hosted as three pieces:
-
-- Frontend (static Vite build)
-- Backend (Node HTTP server + Socket.io)
+- Frontend (Vite static build) on [Vercel](https://sneaker-drop-six.vercel.app/)
+- Backend (Node HTTP server + Socket.io) on [Render](https://api-sneaker-drop.onrender.com)
 - Neon PostgreSQL (`DATABASE_URL`)
 
-Set `CORS_ORIGIN` and `VITE_API_URL` to the deployed origins.
+Production environment variables:
 
-**Live Demo:** Not deployed yet
+| Location | Variable | Value |
+| -------- | -------- | ----- |
+| Vercel   | `VITE_API_URL` | `https://api-sneaker-drop.onrender.com` |
+| Render   | `CORS_ORIGIN` | `https://sneaker-drop-six.vercel.app` |
+| Render   | `DATABASE_URL` | Neon connection string |
+| Render   | `NODE_ENV` | `production` |
+
+Render supplies `PORT`. Do not hardcode it.
+
+**Live Demo:** [https://sneaker-drop-six.vercel.app/](https://sneaker-drop-six.vercel.app/)
 
 ## Design / Engineering Decisions
 

@@ -1,14 +1,3 @@
-/**
- * Idempotent demo-data setup for the final assessment.
- *
- * - Renames leftover Phase/test drops to realistic sneaker names
- *   (does not delete them, so stock/reservations stay valid).
- * - Ensures the featured catalog plus extra restored sneakers exist.
- * - Purchases for the featured drops go through reservation + purchase services.
- *
- * Usage (from server/):
- *   node scripts/setup-demo-data.js
- */
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
@@ -127,7 +116,6 @@ function featuredDrops() {
   ];
 }
 
-/** Unique former Phase/test drops, restored as sneaker products. */
 function restoredSneakers() {
   const specs = [
     {

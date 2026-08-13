@@ -6,21 +6,6 @@ const {
 } = require('../sockets/socketEmitter');
 const { getLatestPurchasers } = require('./purchaseFeedService');
 
-/**
- * Complete a purchase for a user's active, non-expired reservation.
- *
- * Concurrency safety:
- * - FOR UPDATE on the reservation so purchase and the expiry worker
- *   cannot both transition the same row.
- * - FOR UPDATE on the drop so stock logic stays consistent with reserve/expire.
- * - Purchase create + reservation complete run in the SAME transaction.
- *
- * availableStock is intentionally NOT changed — stock was already decremented
- * at reservation time.
- *
- * After COMMIT we may emit stock_updated with the actual DB value for
- * client consistency (stock does not change during purchase).
- */
 async function purchaseDrop({ dropId, userId }) {
   try {
     const result = await sequelize.transaction(async (transaction) => {
@@ -38,7 +23,6 @@ async function purchaseDrop({ dropId, userId }) {
         throw err;
       }
 
-      // Lock the user's active reservation for this drop (SELECT … FOR UPDATE).
       const reservation = await Reservation.findOne({
         where: {
           userId,
@@ -50,7 +34,6 @@ async function purchaseDrop({ dropId, userId }) {
       });
 
       if (!reservation) {
-        // Distinguish already-purchased / expired / never-reserved.
         const alreadyPurchased = await Purchase.findOne({
           where: { userId, dropId },
           transaction,
@@ -66,7 +49,6 @@ async function purchaseDrop({ dropId, userId }) {
           throw err;
         }
 
-        // Worker may have just expired it — still report as expired, not "no reservation".
         const expiredReservation = await Reservation.findOne({
           where: { userId, dropId, status: 'expired' },
           transaction,
@@ -82,7 +64,6 @@ async function purchaseDrop({ dropId, userId }) {
         throw err;
       }
 
-      // Always re-check after acquiring the lock (expiry worker may have raced).
       if (reservation.status !== 'active') {
         if (reservation.status === 'completed') {
           const err = new Error('Reservation has already been purchased');
@@ -95,13 +76,11 @@ async function purchaseDrop({ dropId, userId }) {
       }
 
       if (reservation.expiresAt <= new Date()) {
-        // Do not restore stock here — the Phase 5 expiry worker owns that.
         const err = new Error('Reservation has expired');
         err.status = 410;
         throw err;
       }
 
-      // Lock the drop so purchase stays safe alongside reserve/expire paths.
       const drop = await Drop.findByPk(dropId, {
         transaction,
         lock: transaction.LOCK.UPDATE,
@@ -113,7 +92,6 @@ async function purchaseDrop({ dropId, userId }) {
         throw err;
       }
 
-      // Do NOT change availableStock — unit was already removed at reserve time.
       const purchase = await Purchase.create(
         {
           dropId,
@@ -139,7 +117,6 @@ async function purchaseDrop({ dropId, userId }) {
       };
     });
 
-    // COMMIT succeeded — broadcast stock + activity feed from committed data.
     emitStockUpdated(result.dropId, result.availableStock);
 
     const purchasers = await getLatestPurchasers(result.dropId);

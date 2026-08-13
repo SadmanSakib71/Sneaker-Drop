@@ -44,7 +44,6 @@ module.exports = {
       },
     });
 
-    // Keep inventory numbers valid at the database level
     await queryInterface.addConstraint('drops', {
       fields: ['totalStock'],
       type: 'check',

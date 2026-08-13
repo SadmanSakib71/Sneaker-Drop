@@ -3,7 +3,6 @@ const dropRoutes = require('./routes/dropRoutes');
 
 const app = express();
 
-// Allow the Vite React app (and other configured origins) to call the API.
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 app.use((req, res, next) => {
@@ -35,7 +34,7 @@ app.use((req, res) => {
   });
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err);
   res.status(err.status || 500).json({
     status: 'error',

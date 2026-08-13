@@ -1,9 +1,5 @@
 const { getIO } = require('./socket');
 
-/**
- * Broadcast the latest available stock for a drop to its room.
- * Call ONLY after a successful database COMMIT.
- */
 function emitStockUpdated(dropId, availableStock) {
   const io = getIO();
   if (!io) {
@@ -16,10 +12,6 @@ function emitStockUpdated(dropId, availableStock) {
   });
 }
 
-/**
- * Broadcast the latest 3 purchasers for a drop to its room.
- * Call ONLY after a successful purchase COMMIT.
- */
 function emitPurchaseFeedUpdated(dropId, purchasers) {
   const io = getIO();
   if (!io) {

@@ -2,16 +2,11 @@ const { Server } = require('socket.io');
 
 let io = null;
 
-/**
- * Parse and validate a dropId from socket event payloads.
- * Returns a positive integer, or null if invalid.
- */
 function parseDropId(payload) {
   if (payload == null) {
     return null;
   }
 
-  // Clients may send { dropId } or a bare number/string.
   const raw = typeof payload === 'object' ? payload.dropId : payload;
   const dropId = Number(raw);
 

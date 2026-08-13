@@ -2,15 +2,6 @@ const { Op } = require('sequelize');
 const { sequelize, Drop, Reservation } = require('../models');
 const { emitStockUpdated } = require('../sockets/socketEmitter');
 
-/**
- * Expire one reservation and restore its stock, atomically.
- *
- * SELECT … FOR UPDATE on both rows + status re-check means a concurrent
- * purchase (or another expiry attempt) cannot double-restore stock or
- * expire a reservation that is no longer active.
- *
- * Socket.io is notified only AFTER the transaction commits successfully.
- */
 async function expireOneReservation(reservationId) {
   const result = await sequelize.transaction(async (transaction) => {
     const reservation = await Reservation.findByPk(reservationId, {
@@ -22,7 +13,6 @@ async function expireOneReservation(reservationId) {
       return null;
     }
 
-    // Re-check after lock — another process may have completed/cancelled/expired it.
     if (reservation.status !== 'active') {
       return null;
     }
@@ -54,7 +44,6 @@ async function expireOneReservation(reservationId) {
     };
   });
 
-  // COMMIT succeeded and stock was restored — notify drop room clients.
   if (result) {
     emitStockUpdated(result.dropId, result.availableStock);
   }
@@ -62,10 +51,6 @@ async function expireOneReservation(reservationId) {
   return result;
 }
 
-/**
- * Find active reservations past expiresAt and expire each one safely.
- * Candidate lookup is outside the transaction; each expire re-checks under lock.
- */
 async function expireDueReservations() {
   const due = await Reservation.findAll({
     where: {
@@ -91,6 +76,5 @@ async function expireDueReservations() {
 }
 
 module.exports = {
-  expireOneReservation,
   expireDueReservations,
 };
